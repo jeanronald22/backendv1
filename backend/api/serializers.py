@@ -67,6 +67,7 @@ class ServiceSerialiser(serializers.ModelSerializer):
 
 class PatientSerialiser(serializers.ModelSerializer):
     personne = PersonneSerializer(required=True)
+    
     class Meta:
         model = Patient
         fields = '__all__'
@@ -147,3 +148,11 @@ class DossierMedicalSerialiser(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+    
+
+class PersonnelSerializer(serializers.ModelSerializer):
+    personne = PersonneSerializer()
+
+    class Meta:
+        model = Personnel
+        fields = '__all__'
