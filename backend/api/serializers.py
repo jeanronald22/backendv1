@@ -149,6 +149,8 @@ class DossierMedicalSerialiser(serializers.ModelSerializer):
         instance.save()
         return instance
     
+#-------------------------------------------------------------- Serialiser/endpoint Personnel --------------------------------#
+#-----------------------------------------------operations possible sur tous le Personnelx (get, update, delete) -------------#
 
 class PersonnelSerializer(serializers.ModelSerializer):
     personne = PersonneSerializer()
