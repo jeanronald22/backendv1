@@ -9,7 +9,7 @@ class Personne(models.Model):
         ('M', 'Masculin'),
         ('F', 'Féminin'),
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_info')
+    
     date_naissance = models.DateField()
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICES)
     
@@ -26,20 +26,19 @@ class Service(models.Model):
     description = models.TextField()
     responsable = models.ForeignKey(Personne, on_delete=models.SET_NULL, null=True)
 
-class Personnel(models.Model):
-    personne = models.OneToOneField(Personne, on_delete=models.CASCADE)
-    fonction = models.CharField(max_length=100)
-    horaire_travail = models.CharField(max_length=100)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    specialites = models.CharField(max_length=255)
-
 class Patient(models.Model):
     personne = models.OneToOneField(Personne, on_delete=models.CASCADE)
     temperature = models.FloatField()
     poids = models.FloatField()
     taille = models.FloatField()
     tension_art = models.FloatField()
-
+class Personnel(models.Model):
+    patient = models.OneToOneField(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_info')
+    fonction = models.CharField(max_length=100)
+    horaire_travail = models.CharField(max_length=100)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    specialites = models.CharField(max_length=255)
 class Facture(models.Model):
     date = models.DateField()
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)

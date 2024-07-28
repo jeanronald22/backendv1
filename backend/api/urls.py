@@ -14,6 +14,8 @@ route.register('patients', PatientViewSet)
 route.register('consultations', ConsultationViewSet)
 route.register('factures', FactureViewSet)
 route.register('dossiers_medical', DossierMedicalViewSet)
+route.register('personnels', PersonnelsViewSet)
+route.register('groupes', GroupeViewSet)
 
 
 urlpatterns = [

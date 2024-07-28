@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-r=@x)ha6&&-%v+$9(+tthiadpmtexe%v_t6=lpv&77@d+5#$a*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.20.10.11', 'localhost', '127.0.0.1', '*']
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 # Application definition
@@ -37,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
     'rest_framework',
+    'corsheaders',
     'rest_framework_simplejwt',
     'api',
     
@@ -57,6 +59,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# configuration des regles CORS
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:19000",  # Adresse du serveur Expo
+#     "http://172.20.10.11:8000",  # Adresse IP de votre serveur Django
+#     "http://localhost:8000",  # Si vous accédez à Django localement
+# ]
 
 
 ROOT_URLCONF = 'backend.urls'
@@ -138,29 +146,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# configuration des regles CORS
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-# entete autoriser
-
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
-# autorise l'ajout des infon dans la requette
-CORS_ALLOW_CREDENTIALS = True
-

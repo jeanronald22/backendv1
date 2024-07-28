@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from api.models import *
 
@@ -7,11 +7,14 @@ from api.models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
-
+        fields = ['username', 'password']
+# group 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = '__all__'
 # definition du serialiser de personne
 class PersonneSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
     class Meta:
         model = Personne
         fields = '__all__'
@@ -46,7 +49,7 @@ class PersonneSerializer(serializers.ModelSerializer):
 #-----------------------------------------------operations possible sur tous les service (get, update, delete) -------------#
 
 class ServiceSerialiser(serializers.ModelSerializer):
-    responsable = serializers.PrimaryKeyRelatedField(queryset=Personne.objects.all(), required=True)
+    responsable = serializers.PrimaryKeyRelatedField(queryset=Personnel.objects.all(), required=False)
     class Meta:
         model = Service
         fields = '__all__'
@@ -74,11 +77,8 @@ class PatientSerialiser(serializers.ModelSerializer):
 
     def create(self, validated_data):
         personne_info = validated_data.pop('personne', None) 
-        user_info = personne_info.pop('user', None) # extraction des info d'un user
-        if user_info:
-            user = User.objects.create_user(**user_info)
         if personne_info:
-            personne = Personne.objects.create(user = user, **personne_info)
+            personne = Personne.objects.create(**personne_info)
         patient = Patient.objects.create(personne = personne, **validated_data)
         return patient
 
@@ -103,7 +103,7 @@ class ConsultationSerialiser(serializers.ModelSerializer):
 
 class FactureSerialiser(serializers.ModelSerializer):
     consultation = serializers.PrimaryKeyRelatedField(queryset=Consultation.objects.all(), required=True)
-    patient = PatientSerialiser()
+    patient = serializers.PrimaryKeyRelatedField(queryset=Patient.objects.all(), required=True)
     class Meta:
         model = Facture
         fields = '__all__'
@@ -130,7 +130,7 @@ class FactureSerialiser(serializers.ModelSerializer):
 class DossierMedicalSerialiser(serializers.ModelSerializer):
     
     patient = serializers.PrimaryKeyRelatedField(queryset=Patient.objects.all())
-    medecin = serializers.PrimaryKeyRelatedField(queryset=Personne.objects.all())
+    medecin = serializers.PrimaryKeyRelatedField(queryset=Personnel.objects.all())
     consultation = serializers.PrimaryKeyRelatedField(queryset=Consultation.objects.all())
     
     class Meta:
@@ -153,8 +153,22 @@ class DossierMedicalSerialiser(serializers.ModelSerializer):
 #-----------------------------------------------operations possible sur tous le Personnelx (get, update, delete) -------------#
 
 class PersonnelSerializer(serializers.ModelSerializer):
-    personne = PersonneSerializer()
+    user = UserSerializer(required=True)
+    patient = PatientSerialiser(required=False)
 
     class Meta:
         model = Personnel
         fields = '__all__'
+    
+    def create(self, validated_data):
+        # Création du personnel avec le user référencé
+        user_info = validated_data.pop('user', None)
+        patient_info = validated_data.pop('patient', None)
+        personne_data = patient_info.pop('personne', None)
+        if user_info:
+            user = User.objects.create_user(**user_info)
+        if patient_info:
+            personne = Personne.objects.create(**personne_data)
+            patient = Patient.objects.create(personne = personne, **patient_info)
+        personnel = Personnel.objects.create(user=user, patient=patient, **validated_data)
+        return personnel
